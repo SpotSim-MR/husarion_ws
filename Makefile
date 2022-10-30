@@ -8,6 +8,9 @@ ws-setup:
 ws-clean:
 	bash ./scripts/workspace_clean.sh
 
+frame:
+	rosrun tf2_tools view_frames.py
+
 help:
 	bash ./scripts/help.sh
 
