@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+    <arg name="is_use_odom" default="false" />
+    <arg name="is_use_cam" default="false" />
+
+    <!-- # HARDWARE LAUNCH -->
+    <!-- URDF description -->
+    <!-- Static transforms for the ROSBot Wheels-->
+    <param name="robot_description" command="$(find xacro)/xacro '$(find rosbot_description)/urdf/rosbot.xacro'" />
+    <group if="$(eval arg('is_use_odom'))">
+	    <node pkg="tf" type="static_transform_publisher" name="fl_publisher" args="0.05 0.11 0 0 0 0 base_link front_left_wheel 250" />
+	    <node pkg="tf" type="static_transform_publisher" name="fr_publisher" args="0.05 -0.11 0 0 0 0 base_link front_right_wheel 250" />
+	    <node pkg="tf" type="static_transform_publisher" name="rl_publisher" args="-0.05 0.11 0 0 0 0 base_link rear_left_wheel 250" />
+	    <node pkg="tf" type="static_transform_publisher" name="rr_publisher" args="-0.05 -0.11 0 0 0 0 base_link rear_right_wheel 250" />
+    </group>
+
+    <!-- Robot State Publisher -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+    <!-- Launch LIDAR -->
+    <include file="$(find rplidar_ros)/launch/rplidar.launch" />
+
+    <!-- Launch Rosbot firmware -->
+    <include file="$(find rosbot_ekf)/launch/all.launch" />
+
+    <!-- Launch Camera -->
+    <group if="$(eval arg('is_use_cam'))">
+        <include file="$(find astra_launch)/launch/astra.launch" />
+    </group>
+
+    <!-- Launch Bridge -->
+    <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
+    <!-- HARDWARE LAUNCH # -->
+
+    <!-- # MAPPIPNG & NAVIGATION LAUNCH -->
+    <group if="$(eval arg('is_use_odom'))">
+        <!-- Launch Hector Navigation -->
+        <include file="$(find spotsim_hector)/launch/slam.launch">
+            <arg name="is_use_odom" value="$(eval arg('is_use_odom'))" />
+        </include>
+
+        <!-- Move Base -->
+	    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+	      <rosparam file="$(find spotsim_hector)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+	      <rosparam file="$(find spotsim_hector)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+	      <rosparam file="$(find spotsim_hector)/config/local_costmap_params.yaml" command="load" />
+	      <rosparam file="$(find spotsim_hector)/config/global_costmap_params.yaml" command="load" />
+	      <rosparam file="$(find spotsim_hector)/config/trajectory_planner.yaml" command="load" />
+	
+	      <remap from="cmd_vel" to="cmd_vel" />
+	      <remap from="odom" to="odom" />
+	      <remap from="scan" to="/scan" />
+	    </node>
+    </group>
+    <!-- MAPPIPNG & NAVIGATION LAUNCH # -->
+</launch>

@@ -1,0 +1,12 @@
+# Workspace root
+/build
+/devel
+
+# Project src
+/src/hector_slam 
+/src/spot_controller
+/src/spotsim_hector
+
+## Files
+.catkin_workspace
+/src/CMakeLists.txt
