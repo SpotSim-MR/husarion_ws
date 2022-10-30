@@ -41,14 +41,10 @@ getDeps() {
 }
 
 # Clone repositories:
-# - hector_slam: mapping with hector
 # - spotsim_hector: custom hector launches and params
 # - spot_controller: control throught waypoints
 cloneRepo() {
   PATH_SRC="$1/src"
-  if [ ! -d "$PATH_SRC/hector_slam" ]; then
-    git clone https://github.com/tu-darmstadt-ros-pkg/hector_slam.git "$PATH_SRC/hector_slam"
-  fi
 
   if [ ! -d "$PATH_SRC/spotsim_hector" ]; then
     git clone git@github.com:SpotSim-MR/spotsim_hector.git "$PATH_SRC/spotsim_hector"
