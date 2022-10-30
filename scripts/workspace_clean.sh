@@ -19,7 +19,7 @@ resolveWorkspacePath() {
   LOOP_THRESHOLD=5
   TEMP_PATH=$PATH_SETUP_SCRIPT
   while (( --LOOP_THRESHOLD >= 0 )); do
-    if [[ `basename "$TEMP_PATH"` == "spot_ws" ]]; then
+    if [[ `basename "$TEMP_PATH"` == "husarion_ws" ]]; then
         eval "$1='$TEMP_PATH'"
         log "Found workspace path: $PATH_WORKSPACE"
         break
